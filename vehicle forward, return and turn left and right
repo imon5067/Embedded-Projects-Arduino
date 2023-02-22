@@ -1,0 +1,75 @@
+#include <Wire.h>
+// Import the Liquid Crystal library
+#include <LiquidCrystal.h>
+//Initialise the LCD with the arduino. LiquidCrystal(rs, enable, d4, d5, d6, d7)
+LiquidCrystal lcd(37,36,35,34,33,32);
+
+#define Motor_forward         0
+#define Motor_return          1
+#define Motor_L_dir_pin       7
+#define Motor_R_dir_pin       8
+#define Motor_L_pwm_pin       9
+#define Motor_R_pwm_pin       10
+
+
+int xSpeed;
+int ySpeed;
+
+
+
+
+void setup()
+{
+  lcd.begin(20,4);
+  Serial.begin(9600);
+  pinMode(2,INPUT_PULLUP);
+  //attachInterrupt(digitalPinToInterrupt(2), pin_ISR_right, RISING);
+  pinMode(3,INPUT_PULLUP);
+  //attachInterrupt(digitalPinToInterrupt(3), pin_ISR_left, RISING);
+  //pinMode(18,INPUT);
+  //pinMode(21,INPUT);
+  //attachInterrupt(digitalPinToInterrupt(21), travel, RISING);
+  lcd.setCursor(3,0);
+  lcd.print("x-position");
+  lcd.setCursor(0,1);
+  lcd.print("-100%     0%    100%");
+}
+
+void loop()
+{
+
+
+ xSpeed = analogRead(A8);
+ ySpeed = analogRead(A9);
+  
+
+    if(((xSpeed-504)/3 < -30) && ((abs(ySpeed-510)/3) < 30)){
+      digitalWrite(Motor_R_dir_pin,Motor_return);
+      digitalWrite(Motor_L_dir_pin,Motor_return); 
+      analogWrite(Motor_R_pwm_pin,abs((xSpeed-510)/3));
+      analogWrite(Motor_L_pwm_pin,abs((xSpeed-510)/3));
+    }
+    else if(((xSpeed-504)/3 > 30) && ((abs(ySpeed-510)/3) < 30)){
+      digitalWrite(Motor_R_dir_pin,Motor_forward);
+      digitalWrite(Motor_L_dir_pin,Motor_forward); 
+      analogWrite(Motor_R_pwm_pin,abs((xSpeed-510)/3));
+      analogWrite(Motor_L_pwm_pin,abs((xSpeed-510)/3));
+    }
+    else if(((abs(xSpeed-504)/3) < 30) && ((ySpeed-510)/3 < -30)){
+      digitalWrite(Motor_R_dir_pin,Motor_forward);
+      digitalWrite(Motor_L_dir_pin,Motor_return); 
+      analogWrite(Motor_R_pwm_pin,abs((ySpeed-510)/3));
+      analogWrite(Motor_L_pwm_pin,abs((ySpeed-510)/3));
+    }
+    else if(((abs(xSpeed-504)/3) < 30) && ((ySpeed-510)/3 > 30)){
+      digitalWrite(Motor_R_dir_pin,Motor_return);
+      digitalWrite(Motor_L_dir_pin,Motor_forward); 
+      analogWrite(Motor_R_pwm_pin,abs((ySpeed-510)/3));
+      analogWrite(Motor_L_pwm_pin,abs((ySpeed-510)/3));
+    }
+    
+    else {
+      analogWrite(Motor_L_pwm_pin,0);
+      analogWrite(Motor_R_pwm_pin,0);
+    }
+}
