@@ -1,0 +1,57 @@
+#include <Wire.h>
+// Import the Liquid Crystal library
+#include <LiquidCrystal.h>
+//Initialise the LCD with the arduino. LiquidCrystal(rs, enable, d4, d5, d6, d7)
+LiquidCrystal lcd(37,36,35,34,33,32);
+
+#define Motor_forward         0
+#define Motor_return          1
+#define Motor_L_dir_pin       7
+#define Motor_R_dir_pin       8
+#define Motor_L_pwm_pin       9
+#define Motor_R_pwm_pin       10
+
+
+int xpos;
+int xprev;
+int disp_slot;
+
+
+
+
+void setup()
+{
+  lcd.begin(20,4);
+  Serial.begin(9600);
+  pinMode(2,INPUT_PULLUP);
+  //attachInterrupt(digitalPinToInterrupt(2), pin_ISR_right, RISING);
+  pinMode(3,INPUT_PULLUP);
+  //attachInterrupt(digitalPinToInterrupt(3), pin_ISR_left, RISING);
+  //pinMode(18,INPUT);
+  //pinMode(21,INPUT);
+  //attachInterrupt(digitalPinToInterrupt(21), travel, RISING);
+  lcd.setCursor(3,0);
+  lcd.print("x-position");
+  lcd.setCursor(0,1);
+  lcd.print("-100%     0%    100%");
+}
+
+void loop()
+{
+
+  xpos = analogRead(A8)/52;
+  if (xpos != xprev)
+    {
+      lcd.clear();
+      lcd.setCursor(3,0);
+      lcd.print("x-position");
+      lcd.setCursor(0,1);
+      lcd.print("-100%     0%    100%");
+      lcd.setCursor(xpos,2);
+      lcd.print("|");
+     }
+  xprev = xpos;
+  delay(50);
+
+
+}
